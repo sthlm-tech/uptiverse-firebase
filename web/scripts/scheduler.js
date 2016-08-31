@@ -1,7 +1,7 @@
 /*
 	Schedule time report reminders
 */
-var bot = require('./bot')
+var bot = require('./discordBot')
 
 var schedule = require('node-schedule');
 var rule = new schedule.RecurrenceRule();
