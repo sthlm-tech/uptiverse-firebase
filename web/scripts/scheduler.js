@@ -10,5 +10,5 @@ rule.second = 10;
 var j = schedule.scheduleJob(rule, function(){
 
         console.log("Sending message");
-        bot.sendMessageToAll("");
+        bot.sendMessageToAll("God day sir! Time to report time!");
 });

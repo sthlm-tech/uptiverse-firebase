@@ -4,6 +4,7 @@
 
 var Discord = require("discord.js");
 var firebase = require("./firebase")
+var scheduler = require("./scheduler")
 
 // Get the auth token
 var AuthDetails = require("./auth.json");
@@ -28,13 +29,15 @@ bot.on("disconnected", () => {
 //when the bot receives a message
 bot.on("message", msg => {
 
-    var message = msg.content.toLowerCase()
+    var message = msg.content;
+
+    var messageArray = message.split(",");
+
+    var start = messageArray[0].toLowerCase()
 
 	//if message begins with "time"
-	if (message.startsWith("time")) {
+	if (start.startsWith("time")) {
 		//send a message to the channel the ping message was sent in.
-
-		var messageArray = message.split(",");
 
                 console.log("Array length : " + messageArray.length);
 
@@ -56,9 +59,8 @@ bot.on("message", msg => {
 
 		//alert the console
 		console.log("replied " + msg.author.username);
-	}else if(message.startsWith("user")){
 
-	    var messageArray = message.split(",");
+	}else if(start.startsWith("user")){
 
         console.log("Array length : " + messageArray.length);
 
@@ -75,10 +77,25 @@ bot.on("message", msg => {
 
 	        bot.sendMessage(msg, "(user, username, email, usernumber) to add a user");
 	    }
+	}else if (start.startsWith("new code")){
+
+                  console.log("Array length : " + messageArray.length);
+
+          	    if(messageArray.length == 3){
+
+          	        var codeid = messageArray[1];
+                    var description  = messageArray[2];
+
+                    firebase.addNewCode(codeid, description);
+
+          	    }else{
+
+          	        bot.sendMessage(msg, "(code, description) to add a code");
+          	    }
 	}
 });
 
-bot.loginWithToken(AuthDetails.token);
+bot.loginWithToken(AuthDetails.discord_token);
 
 var sendMessageToAll = function (message){
 

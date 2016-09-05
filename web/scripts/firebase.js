@@ -1,12 +1,15 @@
 // Initialize Firebase
 
 var firebase = require('firebase')
+
+// Get the auth token
+var AuthDetails = require("./auth.json");
  
 var config = {
-    apiKey: "AIzaSyAkjDTLPspj9jrUQEYdHUH-WtRS0gLO0cM",
-    authDomain: "time-f409c.firebaseapp.com",
-    databaseURL: "https://time-f409c.firebaseio.com",
-    storageBucket: "time-f409c.appspot.com",
+    apiKey: ,
+    authDomain: AuthDetails.firebase_apiKey,
+    databaseURL: AuthDetails.firebase_databaseURL,
+    storageBucket: AuthDetails.firebase_storageBucket
   };
 
 firebase.initializeApp(config);
@@ -44,10 +47,10 @@ function addTime(discordid, date, hours, code) {
   };
 
   // Get a key for a new user.
-  var newUserKey = firebase.database().ref().child('reports').push().key;
+  var newReportKey = firebase.database().ref().child('reports').push().key;
 
   var updates = {};
-	  updates['/reports/' + newUserKey] = postData;
+	  updates['/reports/' + newReportKey] = postData;
 
   // Add the new user
 	console.log("Adding time report" + discordid + " " + date + " " + hours + " " + code);
@@ -55,7 +58,28 @@ function addTime(discordid, date, hours, code) {
   return firebase.database().ref().update(updates);
 }
 
+function addNewCode(codeId, description) {
+
+	// A post entry.
+  var postData = {
+    codeId: codeId,
+    description: description
+  };
+
+  // Get a key for a new user.
+  var newCodeKey = firebase.database().ref().child('codes').push().key;
+
+  var updates = {};
+	  updates['/codes/' + newCodeKey] = postData;
+
+  // Add the new code
+	console.log("Adding new code" + codeId + " " + description);
+
+  return firebase.database().ref().update(updates);
+}
+
 function checkIfUserExists(discordid){	
+
 	firebase.database().ref('users/').orderByChild("discordid").equalTo(discordid).once("value").then(function (snapshot) {
 		console.log(discordid + " exists " + snapshot.exists());
 	       	return snapshot.exists();
@@ -64,5 +88,5 @@ function checkIfUserExists(discordid){
 
 exports.addNewUser = addNewUser
 exports.addTime = addTime
-
+exports.addNewCode = addNewCode
 
