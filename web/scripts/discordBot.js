@@ -30,7 +30,7 @@ bot.on("disconnected", () => {
 bot.on("message", msg => {
 
     var message = msg.content;
-
+    var discordId = msg.sender.username;
     var messageArray = message.split(",");
 
     var start = messageArray[0].toLowerCase()
@@ -66,7 +66,6 @@ bot.on("message", msg => {
 
 	    if(messageArray.length == 4){
 
-	        var discordId = msg.sender.username;
 	        var name = messageArray[1];
             var email  = messageArray[2];
             var userid = messageArray[3];
@@ -92,7 +91,21 @@ bot.on("message", msg => {
 
           	        bot.sendMessage(msg, "(code, description) to add a code");
           	    }
-	}
+	}else if (start.startsWith("default project")){
+
+                       console.log("Array length : " + messageArray.length);
+
+               	    if(messageArray.length == 2){
+
+               	        var codeid = messageArray[1];
+
+                        firebase.setDefaultCode(codeid, discordId);
+
+               	    }else{
+
+               	        bot.sendMessage(msg, "(code, description) to add a code");
+               	    }
+     	}
 });
 
 bot.loginWithToken(AuthDetails.discord_token);

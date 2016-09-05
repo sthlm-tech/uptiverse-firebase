@@ -6,8 +6,8 @@ var firebase = require('firebase')
 var AuthDetails = require("./auth.json");
  
 var config = {
-    apiKey: ,
-    authDomain: AuthDetails.firebase_apiKey,
+    apiKey: AuthDetails.firebase_apiKey,
+    authDomain: AuthDetails.firebase_authDomain,
     databaseURL: AuthDetails.firebase_databaseURL,
     storageBucket: AuthDetails.firebase_storageBucket
   };
@@ -78,6 +78,26 @@ function addNewCode(codeId, description) {
   return firebase.database().ref().update(updates);
 }
 
+function setDefaultCode(codeId, discordid) {
+
+	// A post entry.
+  var postData = {
+    codeId: codeId,
+    discordid: discordid
+  };
+
+  // Get a key for a new user.
+  var newCodeKey = firebase.database().ref().child('settings').push().key;
+
+  var updates = {};
+	  updates['/settings/' + newCodeKey] = postData;
+
+  // Add the new code
+	console.log("Adding new setting" + codeId + " " + discordid);
+
+  return firebase.database().ref().update(updates);
+}
+
 function checkIfUserExists(discordid){	
 
 	firebase.database().ref('users/').orderByChild("discordid").equalTo(discordid).once("value").then(function (snapshot) {
@@ -86,7 +106,8 @@ function checkIfUserExists(discordid){
 		    });
 }
 
-exports.addNewUser = addNewUser
-exports.addTime = addTime
-exports.addNewCode = addNewCode
+exports.addNewUser = addNewUser;
+exports.addTime = addTime;
+exports.addNewCode = addNewCode;
+exports.setDefaultCode = setDefaultCode;
 
