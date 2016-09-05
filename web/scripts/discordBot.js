@@ -3,6 +3,7 @@
 */
 
 var Discord = require("discord.js");
+var firebase = require("./firebase")
 
 // Get the auth token
 var AuthDetails = require("./auth.json");
@@ -26,13 +27,54 @@ bot.on("disconnected", () => {
 
 //when the bot receives a message
 bot.on("message", msg => {
-	//if message begins with "ping"
-	if (msg.content.startsWith("time")) {
+
+    var message = msg.content.toLowerCase()
+
+	//if message begins with "time"
+	if (message.startsWith("time")) {
 		//send a message to the channel the ping message was sent in.
-		bot.sendMessage(msg, "You reported time");
+
+		var messageArray = message.split(",");
+
+                console.log("Array length : " + messageArray.length);
+
+        	    if(messageArray.length == 2){
+
+        	        var date = new Date().toISOString().slice(0,10);
+        	        var discordId = msg.sender.username;
+        	        var hours = messageArray[1];
+                    var code  = "1";
+
+                    firebase.addTime(discordId, date, hours, code);
+
+                    bot.sendMessage(msg, "You reported time");
+
+        	    }else{
+
+        	        bot.sendMessage(msg, "(time, hours) to add a time report");
+        	    }
 
 		//alert the console
 		console.log("replied " + msg.author.username);
+	}else if(message.startsWith("user")){
+
+	    var messageArray = message.split(",");
+
+        console.log("Array length : " + messageArray.length);
+
+	    if(messageArray.length == 4){
+
+	        var discordId = msg.sender.username;
+	        var name = messageArray[1];
+            var email  = messageArray[2];
+            var userid = messageArray[3];
+
+            firebase.addNewUser(userid, name, email, discordId);
+
+	    }else{
+
+	        bot.sendMessage(msg, "(user, username, email, usernumber) to add a user");
+	    }
 	}
 });
 

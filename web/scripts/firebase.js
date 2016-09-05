@@ -13,11 +13,6 @@ firebase.initializeApp(config);
 
 function addNewUser(uid, name, email, discordid) {
 
-	if (checkIfUserExists(discordid)){
-		console.log(discordid + "already exists in database");
-		return false;
-	}
-
 	// A post entry.
   var postData = {
     uid: uid,
@@ -33,15 +28,41 @@ function addNewUser(uid, name, email, discordid) {
 	  updates['/users/' + newUserKey] = postData;
 
   // Add the new user
-	console.log("Adding user");
+	console.log("Adding user" + uid + " " + name + " " + email + " " + discordid);
+
+  return firebase.database().ref().update(updates);
+}
+
+function addTime(discordid, date, hours, code) {
+
+	// A post entry.
+  var postData = {
+    discordid: discordid,
+    date: date,
+    hours: hours,
+    code: code
+  };
+
+  // Get a key for a new user.
+  var newUserKey = firebase.database().ref().child('reports').push().key;
+
+  var updates = {};
+	  updates['/reports/' + newUserKey] = postData;
+
+  // Add the new user
+	console.log("Adding time report" + discordid + " " + date + " " + hours + " " + code);
+
   return firebase.database().ref().update(updates);
 }
 
 function checkIfUserExists(discordid){	
 	firebase.database().ref('users/').orderByChild("discordid").equalTo(discordid).once("value").then(function (snapshot) {
-		console.log(discordid + " exists " + snapshot.exists());	       
+		console.log(discordid + " exists " + snapshot.exists());
 	       	return snapshot.exists();
 		    });
 }
 
-addNewUser("1","Petteri","petteri.hyttinen@gmail.com","Petteri");
+exports.addNewUser = addNewUser
+exports.addTime = addTime
+
+
